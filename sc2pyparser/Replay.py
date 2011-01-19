@@ -68,3 +68,22 @@ class Replay:
 				self.parse_details(data[i:])
 			
 			i = i + 1
+			
+#	def parse_number(self, data):
+#		byteCount = 0;
+#		value = 0;
+#		byteCur;
+#		
+#		byteCur = src.get() & 0xFF
+#		
+#		while i < len(data):
+#			while (data[i] & 0x80) != 0:
+#				value = ((byteCur & 0x7F) << byteCount*7) | value
+#				byteCount = byteCount + 1
+#
+#	                isNegative = (value & 0x01) != 0
+#	                value = value >> 1;
+#	                if isNegative:
+#	                        value = -value
+#	                
+#	                return value;
