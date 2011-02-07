@@ -109,57 +109,53 @@ class Replay:
 		# \x05 Indexed array
 		elif(data[i] == self.DETAILS_TYPE_INDEXED_ARRAY):
 			i += 1
-			print "i = " + str(i)
 			print 'found hash'
 			
 			(length, movement) = self.parse_number(data[i:])
 			i += movement
 			
 			if DEBUG:
-				print "hash: len(" + str(length) + ") = "
+				print "hash: len(" + str(length) + ")"
 			
 			i += 1
-
-			# index 0 should follow array length
-			(curr_idx, movement) = self.parse_number(data[i:])
-			i += movement + 1
 			
 			return_array = []
+			nulls = 0
+			curr_idx = 0
 			
-			while curr_idx <= length:
-			
-				print 'hash looping: ' + str(curr_idx) + " < " + str(length)
+			while (curr_idx - nulls) < length:
+
+				# get index and check for 'null' entries - THEY DO NOT COUNT AGAINST ARRAY LENGTH
+				(idx, movement) = self.parse_number(data[i:])
+				i += movement
 				
-				(new_data, movement) = self.parse_details(data[i:])
-				
-				print "moved forward: " + str(movement)
-				
-				i = i + movement
-				return_array.append(new_data)
-				
-				# check for 'null' array entries -- This should really be done everywhere curr_idx is used
-				(value, movement) = self.parse_number(data[i:])
-				
-				while value > (curr_idx + 1):
+				while idx > curr_idx:
 					print "Packing a 'None'"
 					return_array.append(None)
 					curr_idx += 1
+					nulls += 1
 					
-					(value, movement) = self.parse_number(data[i:])
-					i += movement
-					
-				(curr_idx, movement) = self.parse_number(data[i:])
-				i += movement+1
+				curr_idx = idx
+				(new_data, movement) = self.parse_details(data[i:])				
+				i += movement
 				
-				print "--- cur_idx at " + str(curr_idx)
+				return_array.append(new_data)
+				
+				i += 1
+				
+				print str(curr_idx) + " - " + str(nulls) + " < " + str(length)
 
-			print " <<<<<< leave parse_details ------- i: " + str(i)
+			print "<<<<<< hasing done"
+			pprint(return_array)
+			
 			return (return_array, i)
 		
 		elif(data[i] == self.DETAILS_TYPE_TINYINT):
 			i = i + 1
 			
-			return ord(data[i], i + 1)
+			print "Tiny int = " + str(ord(data[i]))
+			
+			return (ord(data[i]), i + 1)
 		
 		#\x07 Big Integer
 		elif(data[i] == self.DETAILS_TYPE_BIGINT):
@@ -179,22 +175,28 @@ class Replay:
 				(value, movement) = self.parse_number(data[i:])
 				print "Found VLF = " + str(value)
 			
-			i  = i + 1
 			(value, movement) = self.parse_number(data[i:])
-			return (value, i + movement)
+			return (value, i + movement+1)
 			
 	def parse_number(self, data):
 		i = 0
-		hex_str = hex(ord(data[i]))
-		
+
 		# is the next byte going to be influential on this number?
 		while ord(data[i]) & 0x80 == 0x80:
 			i += 1
-			hex_str += str(hex(ord(data[i])))[2:]
-			
-		if int(hex_str, 16) & 1 == 1:
-			value = (int(hex_str, 16) >> 1) * -1
+
+		value = ord(data[i])
+		
+		j = 0
+		while j < i:		
+			bit = ord(data[j]) & 0x7F
+			value = value << 7
+			value = value | bit
+			j += 1
+		
+		if value & 1 == 1:
+			value = (value >> 1) * -1
 		else:
-			value = (int(hex_str, 16) >> 1)
+			value = (value >> 1)
 		
 		return (value, i)
