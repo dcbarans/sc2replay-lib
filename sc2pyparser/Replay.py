@@ -71,13 +71,12 @@ class Replay:
 			# ... then length
 			i += 1
 			(length, movement) = self.parse_number(data[i:])
-			i += movement
+			i += movement + 1
 			
 			if DEBUG:
 				print "Array: len(" + str(length) + ")"
 			
 			# move up i to the data!
-			i += 1
 			j = 0
 			return_array = []
 			
@@ -85,25 +84,20 @@ class Replay:
 				
 				print 'array looping: ' + str(j) + " < " + str(length)
 				
-				
-				(new_data, movement) = self.parse_details(data[i:])
-				
+				(new_data, movement) = self.parse_details(data[i:])				
 				i += movement
+				
 				return_array.append(new_data)
 				
-				
-				if DEBUG:
-					print "returned: " + return_array[j]
-				
-				i = i + 1
-				if data[self.pointer] != '\x02':
-					raise Exception('Un-indexed array expected x02 after element, none found')
-				
-				i = i + 1
-				j = j + 1
-				print "---"
+#				if data[i] != '\x02':
+#					raise Exception('Un-indexed array expected x02 after element, ' + str(ord(data[i])) + ' found')				
+#				i += 1
+
+				j += 1
 							
-			print " <<<<<< leave parse_details ------- i: " + str(i)							
+			print "<<<<<< array-ing done"
+			pprint(return_array)
+
 			return (return_array, i)
 					
 		# \x05 Indexed array
@@ -112,12 +106,10 @@ class Replay:
 			print 'found hash'
 			
 			(length, movement) = self.parse_number(data[i:])
-			i += movement
+			i += movement + 1
 			
 			if DEBUG:
 				print "hash: len(" + str(length) + ")"
-			
-			i += 1
 			
 			return_array = []
 			nulls = 0
@@ -127,9 +119,9 @@ class Replay:
 
 				# get index and check for 'null' entries - THEY DO NOT COUNT AGAINST ARRAY LENGTH
 				(idx, movement) = self.parse_number(data[i:])
-				i += movement
+				i += movement + 1
 				
-				while idx > curr_idx:
+				while idx > (curr_idx):
 					print "Packing a 'None'"
 					return_array.append(None)
 					curr_idx += 1
@@ -141,7 +133,8 @@ class Replay:
 				
 				return_array.append(new_data)
 				
-				i += 1
+#				i += 1
+				curr_idx += 1
 				
 				print str(curr_idx) + " - " + str(nulls) + " < " + str(length)
 
