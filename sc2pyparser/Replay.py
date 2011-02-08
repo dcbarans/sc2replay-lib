@@ -5,12 +5,12 @@ from pprint import pprint
 
 class Replay:
 
-	DETAILS_TYPE_BIN			= '\x02'
-	DETAILS_TYPE_ARRAY			= '\x04'
+	DETAILS_TYPE_BIN		= '\x02'
+	DETAILS_TYPE_ARRAY		= '\x04'
 	DETAILS_TYPE_INDEXED_ARRAY	= '\x05'
 	DETAILS_TYPE_TINYINT		= '\x06'
-	DETAILS_TYPE_BIGINT			= '\x07'
-	DETAILS_TYPE_VLF			= '\x09'
+	DETAILS_TYPE_BIGINT		= '\x07'
+	DETAILS_TYPE_VLF		= '\x09'
 
 	FILE_NAME_DETAILS = 'replay.details'
 		
@@ -135,14 +135,14 @@ class Replay:
 		while ord(data[i]) & 0x80 == 0x80:
 			i += 1
 
-		value = ord(data[i])
+		value = ord(data[i]) & 0x7F
 		
-		j = 0
-		while j < i:		
+		j = i-1
+		while j >= 0:
 			bit = ord(data[j]) & 0x7F
 			value = value << 7
 			value = value | bit
-			j += 1
+			j -= 1
 		
 		if value & 1 == 1:
 			value = (value >> 1) * -1
