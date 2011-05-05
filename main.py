@@ -1,5 +1,12 @@
 #! /usr/bin/env python
 
-from sc2pyparser import Replay
+import argparse
+from sc2replaylib import Replay
 
-Replay.Replay('Monsoon.SC2Replay')
+parser = argparse.ArgumentParser(
+		description='This is a console adapter to work with SC2Replaylib library.')
+parser.add_argument('replayFile', type=file)
+
+args = parser.parse_args()
+
+Replay.Replay(args.replayFile.name)
