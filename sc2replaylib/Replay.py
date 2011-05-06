@@ -1,7 +1,5 @@
-from parsers.details import DetailsParser
-
+from pprint import pprint
 from mpyq import MPQArchive
-import sc2replaylib
 
 from sc2replaylib.parsers.details import DetailsParser
 
@@ -11,7 +9,6 @@ class Replay:
 	
 	timestamp = None
 	timezone = None
-	
 	
 	_replayFile = None
 	
@@ -29,7 +26,21 @@ class Replay:
 					details_parser = DetailsParser(data)
 					raw_details = details_parser.parse()
 
-					print raw_details
+					pprint(raw_details)
 
 		except IOError as (errno, strerror):
 			print strerror
+			
+
+class Team:
+	
+	players = []
+	
+	isWinner = False
+	
+class Player:
+	
+	battlenet_id = None
+	race = None
+	color = None
+	handycap = None
