@@ -1,7 +1,7 @@
 #! /usr/bin/env python
 
 import argparse
-from sc2replaylib.replay import Replay
+from sc2replaylib.Replay import Replay
 import pprint
 
 parser = argparse.ArgumentParser(
@@ -12,4 +12,4 @@ args = parser.parse_args()
 
 # basic replay here
 replay = Replay(args.replayFile)
-pprint.pprint(replay)
+#pprint.pprint(replay)

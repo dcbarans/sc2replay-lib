@@ -1,5 +1,4 @@
 import struct
-from pprint import pprint
 
 from sc2replaylib.parsers import Parser, ParserException
 

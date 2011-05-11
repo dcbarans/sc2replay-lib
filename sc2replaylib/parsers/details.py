@@ -1,5 +1,3 @@
-import StringIO
-
 from sc2replaylib.parsers import Parser, ParserException
 
 class DetailsParser(Parser):
