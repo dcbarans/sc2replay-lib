@@ -17,40 +17,34 @@ class AttributesParser(Parser):
 			return self.parse_events(self.events_data)
 		
 		
-		def parse_int32(self, data):
+		def unpack_int32(self, data):
 			return struct.unpack_from('<I', data)[0]
+		
+		def unpack_str(self, data):
+			return struct.unpack_from('4s',data)[0][::-1].replace('\x00','')
 		
 		# parses an attribute packet
 		def parse_attribute(self, data):
-			
-			
-			pprint(data)
+			return tuple([
+				self.unpack_int32(data[0:4]),
+				self.unpack_int32(data[4:8]),
+				ord(data[8:9]),
+				self.unpack_str(data[9:13])])
 		
 		def parse_events(self, data):
-			#pprint(data)
-			
+
 			# attributes header, 9 bytes long
 			# should look like: 00  00  00  00  00  aa  aa  aa  aa
-			#                   ^ 5 bytes of zeros  ^ 4 byte int of total attribute length
+			#                   ^ 5 bytes of zeros  ^ 4 byte int of total attribute length			
+			self.length = self.unpack_int32(data[5:9])
 			
-			self.length = self.parse_int32(data[5:9])
-
-			print self.length
-			
-			pprint(data[9:13])
-			print self.parse_int32(data[9:13])
-			print "\n\n\n"
-			
-			# parse 13 byte blocks until there are no more
+			# parse 13 byte blocks until self.length is met
 			i = 0
+			parsed = []
 			while i < self.length:
-				self.parse_attribute(data[
+				parsed.append(self.parse_attribute(data[
 					self.ATTRIB_HEADER_OFFSET+(self.ATTRIB_BYTE_SIZE*i):
-					self.ATTRIB_HEADER_OFFSET+(self.ATTRIB_BYTE_SIZE*(i+1))])
+					self.ATTRIB_HEADER_OFFSET+(self.ATTRIB_BYTE_SIZE*(i+1))]))
 				i += 1
-				break
 			
-			#pprint(data[9:10])
-			#print ord(data[9])
-			
-			
+			return tuple(parsed)
