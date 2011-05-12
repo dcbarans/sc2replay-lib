@@ -3,17 +3,19 @@ import struct
 from sc2replaylib.parsers import Parser, ParserException
 
 class AttributesParser(Parser):
-		
-		events_data = None
-		
+				
 		ATTRIB_BYTE_SIZE		= 13
 		ATTRIB_HEADER_OFFSET	= 9
 		
-		def __init__(self, events_data):
-			self.events_data = events_data
+		def __init__(self, raw_data):
+			self.raw_data = raw_data
+			self.parsed_data = None
 			
 		def parse(self):
-			return self.parse_events(self.events_data)
+			if self.parsed_data == None:
+			 	self.parsed_data = self.parse_events(self.raw_data)
+			
+			return self.parsed_data
 		
 		
 		def unpack_int32(self, data):
