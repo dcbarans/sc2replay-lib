@@ -8,21 +8,18 @@ class DetailsParser(Parser):
 	DETAILS_TYPE_TINYINT		= '\x06'
 	DETAILS_TYPE_BIGINT			= '\x07'
 	DETAILS_TYPE_VLF			= '\x09'
-
 		
-	# This is where the raw details data sits
-	details_data = None
-		
-	def __init__(self, details_data):
-		self.details_data = details_data
+	def __init__(self, raw_data):
+		self.raw_data		= raw_data
+		self.parsed_data	= None
 	
 	def parse(self):
-		(parsed_data, length) = self.parse_details(self.details_data)
-		return parsed_data
+		if self.parsed_data == None:
+			(self.parsed_data, length) = self.parse_details(self.raw_data)
+			
+		return self.parsed_data
 	
-	'''
-	Recursive function to parse_details
-	'''
+	# Recursive function to parse_details
 	def parse_details(self, data):
 		i = 0
 		
