@@ -4,6 +4,8 @@ import argparse
 from sc2replaylib.replay import Replay, Team, Player
 from pprint import pprint
 
+from sc2replaylib.replay import Replay, Team, Player
+
 parser = argparse.ArgumentParser(
 		description='This is a console adapter to work with SC2Replaylib library.')
 parser.add_argument('replayFile', type=file)

@@ -1,8 +1,8 @@
 from mpyq import MPQArchive
 
 from sc2replaylib import Sc2replaylibException
-from parsers.attributes import AttributesParser
-from parsers.details import DetailsParser
+from sc2replaylib.parsers.attributes import AttributesParser
+from sc2replaylib.parsers.details import DetailsParser
 
 class Replay:
 
