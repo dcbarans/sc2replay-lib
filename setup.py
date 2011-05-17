@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
 	name="sc2replay-lib",
-	version="0.1",
+	version="0.1.1",
 	license="MPL 1.1",
 	author="Dominic Baranski",
 	author_email="dominic.baranski@gmail.com",
@@ -24,8 +24,7 @@ setuptools.setup(
 			"Topic :: Software Development :: Libraries",
 			"Topic :: Games/Entertainment :: Real Time Strategy",
 		],
-	
-	requires=['mpyq'],
-	install_requires=['mpyq==0.1.5'],
+	setup_requires=['argparse'],
+	install_requires=['mpyq>=0.1.8', 'argparse'],
 	packages=['sc2replaylib', 'sc2replaylib.parsers'],
 )
