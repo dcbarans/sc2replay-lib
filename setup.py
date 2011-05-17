@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
 	name="sc2replay-lib",
-	version="0.1.1",
+	version="0.1.2",
 	license="MPL 1.1",
 	author="Dominic Baranski",
 	author_email="dominic.baranski@gmail.com",
