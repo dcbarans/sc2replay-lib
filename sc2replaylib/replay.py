@@ -44,7 +44,7 @@ class Replay:
 		self.attributes_parser 	= None
 
 		try:
-			archive = MPQArchive(self.replay_file.name)
+			archive = MPQArchive(self.replay_file)
 			files = archive.extract()
 
 			# bootstrap the right parsers, expand here for different version parsing too
