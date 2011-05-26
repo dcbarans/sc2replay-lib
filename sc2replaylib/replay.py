@@ -244,7 +244,7 @@ class Player:
 		elif race == 'Prot':
 			return 'Protoss'
 			
-		elif rate == 'Zerg':
+		elif race == 'Zerg':
 			return 'Zerg'
 		
 	@property
