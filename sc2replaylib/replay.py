@@ -40,20 +40,23 @@ class Replay:
 		self.teams 				= []
 		self.replay_file		= replay_file
 		
-		self.details_parser		= None
-		self.attributes_parser 	= None
+		self.parsers			= {}
 
 		try:
 			archive = MPQArchive(self.replay_file)
+						
 			files = archive.extract()
 
 			# bootstrap the right parsers, expand here for different version parsing too
+			
+			self.parsers['header'] = DetailsParser(archive.header['user_data_header']['content'])
+			
 			for file_name, data in files.iteritems():
 				if(file_name == self.FILES['attributes']):
-					self.attributes_parser = AttributesParser(data)
+					self.parsers[file_name] = AttributesParser(data)
 						
 				if(file_name == self.FILES['details']):
-					self.details_parser = DetailsParser(data)
+					self.parsers[file_name] = DetailsParser(data)
 		
 			teams = self.attribute(2001)
 			num_teams = 2
@@ -82,7 +85,7 @@ class Replay:
 				self.teams.append(Team(i+1))
 			
 			# bootstrap the player object with some raw data
-			for i, player_details in enumerate(self.details_parser.parse()[0]):
+			for i, player_details in enumerate(self.parsers[self.FILES['details']].parse()[0]):
 				
 				player = Player(player_details, self.player_attributes(i+1))
 								
@@ -104,7 +107,7 @@ class Replay:
 	
 	def player_attributes(self, player_num):
 		rc = []
-		attributes = self.attributes_parser.parse()
+		attributes = self.parsers[self.FILES['attributes']].parse()
 		for attrib in attributes:
 			if attrib[2] == player_num:
 				rc.append(attrib)
@@ -117,7 +120,6 @@ class Replay:
 	def game_teams(self):
 		return self.attribute(2001)
 		
-		
 	@property
 	def game_speed(self):
 		return self.attribute(3000)
@@ -128,16 +130,24 @@ class Replay:
 	
 	@property
 	def map_human_friendly(self):
-		return self.details_parser.parse()[1]
+		return self.parsers[self.FILES['details']].parse()[1]
+
+	@property
+	def version(self):
+		return self.parsers['header'].parse()[1][:4]
+
+	@property
+	def revision(self):
+		return self.parsers['header'].parse()[1][4:5][0]
 
 	@property
 	def timestamp(self):
 		from datetime import datetime
-		return datetime.fromtimestamp((self.details_parser.parse()[5] - 116444735995904000) / 10**7)
+		return datetime.fromtimestamp((self.parsers[self.FILES['details']].parse()[5] - 116444735995904000) / 10**7)
 
 	@property
 	def timezone_offset(self):
-		return (self.details_parser.parse()[6] / 10**7 ) / (60 * 60)
+		return (self.parsers[self.FILES['details']].parse()[6] / 10**7 ) / (60 * 60)
 
 class Team:
 	

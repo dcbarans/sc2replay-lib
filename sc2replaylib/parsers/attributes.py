@@ -4,7 +4,7 @@ from sc2replaylib.parsers import Parser, ParserException
 
 class AttributesParser(Parser):
 				
-	ATTRIB_BYTE_SIZ		= 13
+	ATTRIB_BYTE_SIZE		= 13
 	ATTRIB_HEADER_OFFSET	= 9
 		
 	def __init__(self, raw_data):
