@@ -5,6 +5,9 @@ from sc2replaylib.parsers.attributes import AttributesParser
 from sc2replaylib.parsers.details import DetailsParser
 
 class Replay:
+	"""
+	This class, once initialized with a valid replay file, contains all the data about the given replay
+	"""
 
 	GAME_TEAMS = {
 		'1v1': '1v1',
@@ -36,7 +39,10 @@ class Replay:
 	}
 
 	def __init__(self, replay_file):
-		
+		"""
+		Args:
+			replay_file (file): This is what the user believes to be a starcraft 2 replay file.
+		"""
 		self.teams 				= []
 		self.replay_file		= replay_file
 		
@@ -97,6 +103,17 @@ class Replay:
 			print strerror
 		
 	def attribute(self, key):
+		"""Get a single attribute by it's key
+
+		This will fetch a *replay attribute* by its key.  A replay attribute is one that is concidered global
+		to all players durring the match.  See [[]] for more information on global attributes.
+
+		:param key: The attribute name to look for.
+		:type key: String
+		:rtype: A string or integer
+		:raise Sc2ReplaylibException: If no attribute is found then this exception is raised
+		"""
+
 		attributes = self.attributes()
 		for attr in attributes:
 			if attr[1] == key:
@@ -106,6 +123,15 @@ class Replay:
 		raise Sc2replaylibException("no global attribute found with key '%d'" % (key))
 	
 	def player_attributes(self, player_num):
+		"""Get all player attributes for a given player
+
+		This function returns a list of player attributes that match the given player number.
+
+		:param player_num: The player number, can be between 1 to 8
+		:type player_num: Int
+		:rtype: List
+		"""
+
 		rc = []
 		attributes = self.parsers[self.FILES['attributes']].parse()
 		for attrib in attributes:
@@ -114,14 +140,51 @@ class Replay:
 		return rc
 	
 	def attributes(self):
+		"""Retrieve a list of *global attributes*"""
+
 		return self.player_attributes(16)
 
 	@property
 	def game_teams(self):
+		"""Holds the raw value for what kind of team layout the currently loaded replay has.
+
+		This attribute holds the *raw* value exactly as it is retrieved from the replay file.  It can be of the following types:
+
+		 * ``1v1`` --- Represents a one versus one
+		 * ``2v2`` --- Represents a game with two teams composed of two players each
+		 * ``3v3`` --- Represents a game with two teams composed of three players each
+		 * ``4v4`` --- Represents a game with two teams composed of four players each
+		 * ``FFA`` --- Represents a game with no teams, but can have anywhere from two to eight players
+		 * ``Cust`` --- Represents a custom game where the regular starcraft 2 multiplayer rules do not apply
+
+		:rtype: String --- Raw
+
+		.. warning::
+			Using the raw values is not recomended because they may change durring any given update.  It is recomended to run the output through
+			the ``GAME_TEAMS`` global dict to retrieve a consistent value.
+
+		"""
+
 		return self.attribute(2001)
 		
 	@property
 	def game_speed(self):
+		"""Holds the raw game speed value for the currently loaded replay.
+
+		This attribute holds the *raw* value exactly as it is retrieved from the replay file.  It can be of the following types:
+
+		 * ``Slow`` --- Represents the slowest game speed available, Slow
+		 * ``Slor`` --- Represents the 2nd slowest game speed, Slower
+		 * ``Norm`` --- Represents the normal game speed, Normal
+		 * ``Fasr`` --- Represents the 2nd fastest game speed, Faster
+		 * ``Fast`` --- Represents the fastest game speed, Fast
+
+		.. warning::
+			Using the raw values is not recomended because they may change durring any given update.  It is recomended to run the output through
+			the ``GAME_SPEED`` global dict to retrieve a consistent value.
+
+		"""
+
 		return self.attribute(3000)
 	
 	@property

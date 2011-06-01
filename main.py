@@ -21,6 +21,8 @@ replay = Replay(args.replayFile)
 print 'This replay is version ' + '.'.join([str(n) for n in replay.version])
 print 'The revision number is ' + str(replay.revision)
 
+pprint(replay.parsers['header'].parse())
+
 #raw data on the replay file-----
 pprint(replay.parsers[replay.FILES['details']].parse())
 pprint(replay.parsers[replay.FILES['attributes']].parse())
