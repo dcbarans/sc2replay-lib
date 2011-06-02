@@ -5,6 +5,9 @@ from sc2replaylib.parsers.attributes import AttributesParser
 from sc2replaylib.parsers.details import DetailsParser
 
 class Replay:
+	"""
+	This class, once initialized with a valid replay file, contains all the data about the given replay
+	"""
 
 	GAME_TEAMS = {
 		'1v1': '1v1',
@@ -72,7 +75,10 @@ class Replay:
 	}
 
 	def __init__(self, replay_file):
-		
+		"""
+		Args:
+			replay_file (file): This is what the user believes to be a starcraft 2 replay file.
+		"""
 		self.teams 				= []
 		self.replay_file		= replay_file
 		
@@ -133,6 +139,17 @@ class Replay:
 			print strerror
 		
 	def attribute(self, key):
+		"""Get a single attribute by it's key
+
+		This will fetch a *replay attribute* by its key.  A replay attribute is one that is concidered global
+		to all players durring the match.  See [[]] for more information on global attributes.
+
+		:param key: The attribute name to look for.
+		:type key: String
+		:rtype: A string or integer
+		:raise Sc2ReplaylibException: If no attribute is found then this exception is raised
+		"""
+
 		attributes = self.attributes()
 		for attr in attributes:
 			if attr[1] == key:
@@ -142,6 +159,15 @@ class Replay:
 		raise Sc2replaylibException("no global attribute found with key '%d'" % (key))
 	
 	def player_attributes(self, player_num):
+		"""Get all player attributes for a given player
+
+		This function returns a list of player attributes that match the given player number.
+
+		:param player_num: The player number, can be between 1 to 8
+		:type player_num: Int
+		:rtype: List
+		"""
+
 		rc = []
 		attributes = self.parsers[self.FILES['attributes']].parse()
 		for attrib in attributes:
@@ -150,6 +176,8 @@ class Replay:
 		return rc
 	
 	def attributes(self):
+		"""Retrieve a list of *global attributes*"""
+
 		return self.player_attributes(16)
 
 	def game_teams(self, raw=False):
@@ -181,6 +209,7 @@ class Replay:
 		if not raw:
 			rc = self.GAME_SPEED[rc]
 		return rc
+
 	
 	def game_matching(self, raw=False):
 		"""Holds how the players were matched together to play.
