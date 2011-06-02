@@ -271,27 +271,34 @@ class Replay:
 		return (self.parsers[self.FILES['details']].parse()[6] / 10**7 ) / (60 * 60)
 
 class Team:
-	
+
 	OUTCOME	= {
 		0: "Unknown",
 		1: "Won",
-		2: "Lossed"
+		2: "Lossed",
+		"Unknown": "Unknown",
+		"Won": "Won",
+		"Lossed": "Lossed"
 	}
-		
+
 	def __init__(self, team_number):
 		self.players = []
 		self.number = team_number
-		
-	@property		
-	def outcome(self):
+
+	def outcome(self, raw=False):
 		outcome = self.OUTCOME[0]
 		for p in self.players:
-			if outcome == self.OUTCOME[0] and p.outcome != self.OUTCOME[0]:
-				outcome = p.outcome
-			elif p.outcome != outcome:
-				return self.OUTCOME[0]
+			if outcome == self.OUTCOME[0] and p.outcome() != self.OUTCOME[0]:
+				outcome = p.outcome()
+			elif p.outcome() != outcome:
+				outcome = self.OUTCOME[0]
+				break
+
+		if not raw:
+			outcome = self.OUTCOME[outcome]
+
 		return outcome
-	
+
 class Player:
 	
 	RACE = {
@@ -344,20 +351,19 @@ class Player:
 		self.details	= details
 		self.attributes	= attributes
 
-	@property
-	def type(self):
-		return self.attribute(500)
+	def type(self, raw=False):
+		rc = self.attribute(500)
+		if not raw:
+			rc = self.TYPE[rc]
+		return rc
 
-	@property
 	def handle(self):
 		return self.details[0]
 		
-	@property
 	def bnet_id(self):
 		return self.details[1]
 		
-	@property
-	def race(self):
+	def race(self, raw=False):
 		race = self.attribute(3001)
 		if race == 'RAND':
 			if self.details[2] == 'Terran':
@@ -378,21 +384,20 @@ class Player:
 		elif race == 'Zerg':
 			return 'Zerg'
 		
-	@property
 	def color_argb(self):
 		return self.details[3]
 		
-	@property
 	def color_name(self):
 		return self.COLORS[self.attribute(3002)]
 		
-	@property
 	def handicap(self):
 		return	self.details[6]
 	
-	@property	
-	def outcome(self):
-		return self.details[8]
+	def outcome(self, raw=False):
+		rc = self.details[8]
+		if not raw:
+			rc = self.OUTCOME[rc]
+		return rc
 	
 	def attribute(self, key):
 		for attr in self.attributes:

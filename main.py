@@ -18,10 +18,8 @@ args = parser.parse_args()
 replay = Replay(args.replayFile)
 
 # the version of starcraft that this replay was recorded on
-print 'This replay is version ' + '.'.join([str(n) for n in replay.version])
-print 'The revision number is ' + str(replay.revision)
-
-pprint(replay.parsers['header'].parse())
+print 'This replay is version ' + '.'.join([str(n) for n in replay.version()])
+print 'The revision number is ' + str(replay.revision())
 
 #raw data on the replay file-----
 pprint(replay.parsers[replay.FILES['details']].parse())
@@ -30,19 +28,19 @@ pprint(replay.parsers[replay.FILES['attributes']].parse())
 #-------
 
 # run output of game_speed through human readable list of values
-print replay.GAME_SPEED[replay.game_speed]
+print replay.game_speed()
 
 # raw output of game_teams attribute (could be ugly-ish)
 print replay.game_teams(True)
 
 # running output through another included list
-print replay.GAME_MATCHING[replay.game_matching]
+print replay.game_matching()
 
 # datetime object returned with date match was played
-print replay.timestamp
+print replay.timestamp()
 
 # timezone offset as integer
-print replay.timezone_offset
+print replay.timezone_offset()
 
 
 #-------
@@ -51,8 +49,8 @@ print replay.timezone_offset
 print "there are %d teams" % len(replay.teams)
 
 # pull team win/loss info
-print "Team 1 %s" % Team.OUTCOME[replay.teams[0].outcome]
-print "Team 2 %s" % Team.OUTCOME[replay.teams[1].outcome]
+print "Team 1 %s" % replay.teams[0].outcome()
+print "Team 2 %s" % replay.teams[1].outcome()
 
 
 #-------
@@ -61,8 +59,8 @@ print "There are %d players on team 1" % len(replay.teams[0].players)
 
 player = replay.teams[0].players[0]
 print "%s the %s %s playing as the %s %s" % (
-	player.handle,
-	player.TYPE[player.type],
-	player.OUTCOME[player.outcome],
-	player.color_name,
-	player.RACE[player.race])
+	player.handle(),
+	player.type(),
+	player.outcome(),
+	player.color_name(),
+	player.race())
