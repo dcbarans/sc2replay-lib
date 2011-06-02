@@ -15,6 +15,20 @@ class Replay:
 		'FFA': 'Free for all',
 		'Cust': 'Custom Game'
 	}
+	"""The :attr:`GAME_TEAMS` attribute converts the output of :func:`game_teams` into a consisten and uniform value.
+	For example, if game teams are localized into a foreign language, you can always expect the value of :attr:`GAME_TEAMS` to be
+	the same.
+
+	:attr:`GAME_TEAMS` will convert :func:`game_teams` output to one of the following values:
+
+	 * ``1v1`` --- Represents a one versus one
+	 * ``2v2`` --- Represents a game with two teams composed of two players each
+	 * ``3v3`` --- Represents a game with two teams composed of three players each
+	 * ``4v4`` --- Represents a game with two teams composed of four players each
+	 * ``Free for all`` --- Represents a game with no teams, but can have anywhere from two to eight players
+	 * ``Custom Game`` --- Represents a custom game where the regular starcraft 2 multiplayer rules do not apply
+
+	"""
 	
 	GAME_SPEED = {
 		'Slow': 'Slow',
@@ -23,13 +37,35 @@ class Replay:
 		'Fasr': 'Faster',
 		'Fast': 'Fast'
 	}
+	"""The :attr:`GAME_SPEED` attribute converts the output of :func:`game_speed` into a consistent and uniform value.
+	For example, if game speed is localized into a foreign language, you can always expect the value of :attr:`GAME_SPEED` to be
+	the same.
+
+	:attr:`GAME_SPEED` will convert :func:`game_speed` output to one of the following values:
+
+	 * ``Slow`` --- Represents the slowest game speed available
+	 * ``Slower`` --- Represents the 2nd slowest game speed
+	 * ``Normal`` --- Represents the normal game speed
+	 * ``Faster`` --- Represents the 2nd fastest game speed
+	 * ``Fast`` --- Represents the fastest game speed
+	"""
 	
 	GAME_MATCHING = {
 		'Priv':	'Private',
 		'Amm':	'Auto Match Maker',
 		'Pub':	'Public'
-	}	
-	
+	}
+	"""The :attr:`GAME_MATCHING` attribute converts the output of :func:`game_matching` into a consistent and uniform value.
+	For example, if game matching is localized into a foreign language, you can always expect the value of :attr:`GAME_MATCHING` to be
+	the same.
+
+	:attr:`GAME_MATCHING` will convert :func:`game_matching` output to one of the following values:
+
+	 * ``Private`` --- Represents that this was a private game
+	 * ``Auto Match Maker`` --- Represents that this was a game matched by Blizzard's auto match maker.
+	 * ``Public`` --- Represents that this was a public game
+	"""
+
 	FILES = {
 		'attributes':	'replay.attributes.events',
 		'details':		'replay.details'
@@ -116,37 +152,93 @@ class Replay:
 	def attributes(self):
 		return self.player_attributes(16)
 
-	@property
-	def game_teams(self):
-		return self.attribute(2001)
+	def game_teams(self, raw=False):
+		"""Returns the value for what kind of team layout the currently loaded replay has.
+
+		:param raw: If the raw value is wanted over the processed and consistent value
+		:type raw: Boolean
+		:rtype: String
+
+		.. warning::
+			This attribute holds the **raw** value exactly as it is retrieved from the replay file.  To have a consistent value returned
+			it is recomended to run the output through the :attr:`GAME_TEAMS` dict.
+		"""
 		
-	@property
-	def game_speed(self):
-		return self.attribute(3000)
+		rc = self.attribute(2001)
+		if not raw:
+			rc = self.GAME_TEAMS[rc]
+		return rc
+		
+	def game_speed(self, raw=False):
+		"""Holds the raw game speed value for the currently loaded replay.
+
+		.. warning::
+			This attribute holds the **raw** value exactly as it is retrieved from the replay file.  To have a consistent value returned
+			it is recomended to run the output through the :attr:`GAME_SPEED` dict.
+		"""
+
+		rc = self.attribute(3000)
+		if not raw:
+			rc = self.GAME_SPEED[rc]
+		return rc
 	
-	@property
-	def game_matching(self):
-		return self.attribute(3009)
+	def game_matching(self, raw=False):
+		"""Holds how the players were matched together to play.
+
+		.. warning::
+			This attribute holds the **raw** value exactly as it is retrieved from the replay file.  To have a consistent value returned
+			it is recomended to run the output through the :attr:`GAME_MATCHING` dict.
+		"""
+
+		rc = self.attribute(3009)
+		if not raw:
+			rc = self.GAME_MATCHING[rc]
+		return rc
 	
-	@property
 	def map_human_friendly(self):
+		"""Holds the name of the map file as it is found in the replay.
+		
+		:rtype: String --- Raw
+		
+		.. warning::
+			This attribute holds the *raw* value exactly as it is retrieved from the replay file.
+		"""
 		return self.parsers[self.FILES['details']].parse()[1]
 
-	@property
 	def version(self):
+		"""Holds a list containing the version numbers for the copy of Starcraft 2 that recorded the replay.
+		
+		The list is in the following sequence:
+		
+		``[very major, major, minor, patch]``
+		
+		:rtype: List
+		"""
+		
 		return self.parsers['header'].parse()[1][:4]
 
-	@property
 	def revision(self):
+		"""Holds the revision number of Starcraft 2 that recorded the repaly.  Can also be refered to as the build number.
+		
+		:rtype: String --- Raw
+		"""
+		
 		return self.parsers['header'].parse()[1][4:5][0]
 
-	@property
 	def timestamp(self):
+		"""Holds the timestamp of when the replay was recorded in a datetime object.
+		
+		:rtype: datetime
+		"""
+		
 		from datetime import datetime
 		return datetime.fromtimestamp((self.parsers[self.FILES['details']].parse()[5] - 116444735995904000) / 10**7)
 
-	@property
 	def timezone_offset(self):
+		"""Holds an positive or negative integer which represents the timezone offset of where the replay was recorded.
+		
+		:rtype: Integer
+		"""
 		return (self.parsers[self.FILES['details']].parse()[6] / 10**7 ) / (60 * 60)
 
 class Team:

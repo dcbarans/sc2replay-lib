@@ -31,7 +31,7 @@ pprint(replay.parsers[replay.FILES['attributes']].parse())
 print replay.GAME_SPEED[replay.game_speed]
 
 # raw output of game_teams attribute (could be ugly-ish)
-print replay.game_teams
+print replay.game_teams(True)
 
 # running output through another included list
 print replay.GAME_MATCHING[replay.game_matching]
