@@ -18,20 +18,6 @@ class Replay:
 		'FFA': 'Free for all',
 		'Cust': 'Custom Game'
 	}
-	"""The :attr:`GAME_TEAMS` attribute converts the output of :func:`game_teams` into a consisten and uniform value.
-	For example, if game teams are localized into a foreign language, you can always expect the value of :attr:`GAME_TEAMS` to be
-	the same.
-
-	:attr:`GAME_TEAMS` will convert :func:`game_teams` output to one of the following values:
-
-	 * ``1v1`` --- Represents a one versus one
-	 * ``2v2`` --- Represents a game with two teams composed of two players each
-	 * ``3v3`` --- Represents a game with two teams composed of three players each
-	 * ``4v4`` --- Represents a game with two teams composed of four players each
-	 * ``Free for all`` --- Represents a game with no teams, but can have anywhere from two to eight players
-	 * ``Custom Game`` --- Represents a custom game where the regular starcraft 2 multiplayer rules do not apply
-
-	"""
 	
 	GAME_SPEED = {
 		'Slow': 'Slow',
@@ -40,34 +26,12 @@ class Replay:
 		'Fasr': 'Faster',
 		'Fast': 'Fast'
 	}
-	"""The :attr:`GAME_SPEED` attribute converts the output of :func:`game_speed` into a consistent and uniform value.
-	For example, if game speed is localized into a foreign language, you can always expect the value of :attr:`GAME_SPEED` to be
-	the same.
-
-	:attr:`GAME_SPEED` will convert :func:`game_speed` output to one of the following values:
-
-	 * ``Slow`` --- Represents the slowest game speed available
-	 * ``Slower`` --- Represents the 2nd slowest game speed
-	 * ``Normal`` --- Represents the normal game speed
-	 * ``Faster`` --- Represents the 2nd fastest game speed
-	 * ``Fast`` --- Represents the fastest game speed
-	"""
 	
 	GAME_MATCHING = {
 		'Priv':	'Private',
 		'Amm':	'Auto Match Maker',
 		'Pub':	'Public'
 	}
-	"""The :attr:`GAME_MATCHING` attribute converts the output of :func:`game_matching` into a consistent and uniform value.
-	For example, if game matching is localized into a foreign language, you can always expect the value of :attr:`GAME_MATCHING` to be
-	the same.
-
-	:attr:`GAME_MATCHING` will convert :func:`game_matching` output to one of the following values:
-
-	 * ``Private`` --- Represents that this was a private game
-	 * ``Auto Match Maker`` --- Represents that this was a game matched by Blizzard's auto match maker.
-	 * ``Public`` --- Represents that this was a public game
-	"""
 
 	FILES = {
 		'attributes':	'replay.attributes.events',
@@ -76,8 +40,8 @@ class Replay:
 
 	def __init__(self, replay_file):
 		"""
-		Args:
-			replay_file (file): This is what the user believes to be a starcraft 2 replay file.
+			:param replay_file: This is what the user believes to be a starcraft 2 replay file.
+			:type replay_file: File
 		"""
 		self.teams 				= []
 		self.replay_file		= replay_file
@@ -183,13 +147,16 @@ class Replay:
 	def game_teams(self, raw=False):
 		"""Returns the value for what kind of team layout the currently loaded replay has.
 
-		:param raw: If the raw value is wanted over the processed and consistent value
+		:param raw: If the raw value is wanted over the consistent and un-localized value
 		:type raw: Boolean
-		:rtype: String
-
-		.. warning::
-			This attribute holds the **raw** value exactly as it is retrieved from the replay file.  To have a consistent value returned
-			it is recomended to run the output through the :attr:`GAME_TEAMS` dict.
+		:rtype: This is a list of possible return values for a replay, all of which are of type ``String``:
+		
+		 * ``1v1`` --- Represents a one versus one
+		 * ``2v2`` --- Represents a game with two teams composed of two players each
+		 * ``3v3`` --- Represents a game with two teams composed of three players each
+		 * ``4v4`` --- Represents a game with two teams composed of four players each
+		 * ``Free for all`` --- Represents a game with no teams, but can have anywhere from two to eight players
+		 * ``Custom Game`` --- Represents a custom game where the regular starcraft 2 multiplayer rules do not apply
 		"""
 		
 		rc = self.attribute(2001)
@@ -200,9 +167,15 @@ class Replay:
 	def game_speed(self, raw=False):
 		"""Holds the raw game speed value for the currently loaded replay.
 
-		.. warning::
-			This attribute holds the **raw** value exactly as it is retrieved from the replay file.  To have a consistent value returned
-			it is recomended to run the output through the :attr:`GAME_SPEED` dict.
+		:param raw: If the raw value is wanted over the consistent and un-localized value
+		:type raw: Boolean
+		:rtype: This is a list of possible return values for a replay, all of which are of type ``String``:
+		
+		 * ``Slow`` --- Represents the slowest game speed available
+		 * ``Slower`` --- Represents the 2nd slowest game speed
+		 * ``Normal`` --- Represents the normal game speed
+		 * ``Faster`` --- Represents the 2nd fastest game speed
+		 * ``Fast`` --- Represents the fastest game speed
 		"""
 
 		rc = self.attribute(3000)
@@ -214,9 +187,13 @@ class Replay:
 	def game_matching(self, raw=False):
 		"""Holds how the players were matched together to play.
 
-		.. warning::
-			This attribute holds the **raw** value exactly as it is retrieved from the replay file.  To have a consistent value returned
-			it is recomended to run the output through the :attr:`GAME_MATCHING` dict.
+		:param raw: If the raw value is wanted over the consistent and un-localized value
+		:type raw: Boolean
+		:rtype: This is a list of possible return values for a replay, all of which are of type ``String``:
+
+		 * ``Private`` --- Represents that this was a private game
+		 * ``Auto Match Maker`` --- Represents that this was a game matched by Blizzard's auto match maker.
+		 * ``Public`` --- Represents that this was a public game
 		"""
 
 		rc = self.attribute(3009)
