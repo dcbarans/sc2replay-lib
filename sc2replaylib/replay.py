@@ -7,6 +7,9 @@ from sc2replaylib.parsers.details import DetailsParser
 class Replay:
 	"""
 	This class, once initialized with a valid replay file, contains all the data about the given replay
+
+	:param replay_file: This is what the user believes to be a starcraft 2 replay file.
+	:type replay_file: File
 	"""
 
 	GAME_TEAMS = {
@@ -39,10 +42,6 @@ class Replay:
 	}
 
 	def __init__(self, replay_file):
-		"""
-			:param replay_file: This is what the user believes to be a starcraft 2 replay file.
-			:type replay_file: File
-		"""
 		self.teams 				= []
 		self.replay_file		= replay_file
 		
@@ -248,7 +247,14 @@ class Replay:
 		return (self.parsers[self.FILES['details']].parse()[6] / 10**7 ) / (60 * 60)
 
 class Team:
+	"""This class represents a grouping of Player objects that make up one team found in a game.
+	
+	This object is automatically created and filled with players upon creation of a :class:`Replay` object.
 
+	:param team_number: an arbitrary number to identify the team.
+	:type team_number: Integer
+	"""
+	
 	OUTCOME	= {
 		0: "Unknown",
 		1: "Won",
@@ -260,7 +266,7 @@ class Team:
 		self.number = team_number
 
 	def outcome(self, raw=False):
-		"""Returns the outcome of the match.
+		"""Returns if the team won or lost the match.
 
 		:param raw: If the raw value is wanted over the consistent and un-localized value
 		:type raw: Boolean
@@ -285,7 +291,18 @@ class Team:
 		return outcome
 
 class Player:
-	
+	"""This class represents a single player and all of their information from a Starcraft 2 Replay
+
+	This object is automatically created and filled with players upon creation of a :class:`Replay` object.
+
+	:param details: the output of the :class:`DetailsParser` parse function 
+	:type details: List
+
+	:param attributes: the output of the :class:`AttributesParser` parse function 
+	:type attributes: List
+
+	"""
+
 	RACE = {
 		'Terran':		'Terran',
 		'Protoss':		'Protoss',
@@ -294,13 +311,13 @@ class Player:
 		'Rand-Protoss':	'Random Protoss',
 		'Rand-Zerg':	'Random Zerg'
 	}
-	
+
 	OUTCOME	= {
 		0: "Unknown",
 		1: "Won",
 		2: "Lost"
 	}
-	
+
 	COLORS = {
 		'tc01': 'Red',
 		'tc02': 'Blue',
@@ -318,12 +335,12 @@ class Player:
 		'tc14': 'Dark Grey',
 		'tc15': 'Pink'
 	}
-	
+
 	TYPE = {
 		'Humn': 'Human',
 		'Comp': 'Computer'
 	}
-	
+
 	DIFFICULTY = {
 		'Easy': 'Easy',
 		'VyEy': 'Very Easy',
@@ -331,24 +348,57 @@ class Player:
 		'VyHd': 'Very Hard',
 		'Insa': 'Insane'
 	}
-	
+
 	def __init__(self, details, attributes):
 		self.details	= details
 		self.attributes	= attributes
 
 	def type(self, raw=False):
+		"""Returns the type of player this is.
+
+		:param raw: If the raw value is wanted over the consistent and un-localized value
+		:type raw: Boolean
+		:rtype: This is a list of possible return values for a replay, all of which are of type ``String``:
+
+		 * ``Human`` --- Represents that the player is a human.
+		 * ``Computer`` --- Represents that the player is non human.
+		"""
+		
 		rc = self.attribute(500)
 		if not raw:
 			rc = self.TYPE[rc]
 		return rc
 
 	def handle(self):
+		"""Returns the players nick name, as it was seen durring the game.
+		
+		:rtype: This is a ``String``
+		"""
+		
 		return self.details[0]
 		
 	def bnet_id(self):
+		"""Returns a list of bnet identification numbers.
+		
+		:rtype: list
+		"""
 		return self.details[1]
 		
 	def race(self, raw=False):
+		"""Returns the type of race the player is.
+
+		:param raw: If the raw value is wanted over the consistent and un-localized value
+		:type raw: Boolean
+		:rtype: This is a list of possible return values for a replay, all of which are of type ``String``:
+
+		 * ``Terran`` --- Represents that the player is Terran.
+		 * ``Protoss`` --- Represents that the player is Protoss.
+		 * ``Zerg`` --- Represents that the player is Zerg.
+		 * ``Random Terran`` --- Represents that the player chose random and ended up Terran.
+		 * ``Random Protoss`` --- Represents that the player chose random and ended up Protoss.
+		 * ``Random Zerg`` --- Represents that the player chose random and ended up Zerg.
+		"""
+
 		race = self.attribute(3001)
 		if race == 'RAND':
 			if self.details[2] == 'Terran':
@@ -370,24 +420,80 @@ class Player:
 			return 'Zerg'
 		
 	def color_argb(self):
+		"""Returns a list of 4 integers that represent the color in ARGB format.
+		
+		:rtype: List
+		"""
 		return self.details[3]
 		
-	def color_name(self):
-		return self.COLORS[self.attribute(3002)]
+	def color_name(self, raw=False):
+		"""Returns the color name in plain English.
+
+		:param raw: If the raw value is wanted over the consistent and un-localized value
+		:type raw: Boolean
+		:rtype: This is a list of possible return values for a replay, all of which are of type ``String``:
+
+		* ``Red``
+		* ``Blue``
+		* ``Teal``
+		* ``Purple``
+		* ``Yellow``
+		* ``Orange``
+		* ``Green``
+		* ``Light Pink``
+		* ``Violet``
+		* ``Light Grey``
+		* ``Dark Green``
+		* ``Brown``
+		* ``Light Green``
+		* ``Dark Grey``
+		* ``Pink``
+		"""
+		
+		rc = self.attribute(3002)
+		if not raw:
+			rc = self.COLORS[rc]
+		return rc
 		
 	def handicap(self):
+		"""Returns a number between 0 to 100 that represents if the player has chosen to handicap themselves.
+		
+		:rtype: Integer
+		"""
 		return	self.details[6]
 	
 	def outcome(self, raw=False):
+		"""Returns if the player won or lost the match.
+
+		:param raw: If the raw value is wanted over the consistent and un-localized value
+		:type raw: Boolean
+		:rtype: This is a list of possible return values for a replay, all of which are of type ``String``:
+
+		 * ``Unknown`` --- Represents that the winner is unknown, probably due to someone leaving before the match was over.
+		 * ``Won`` --- Represents that this game was won by this team.
+		 * ``Lost`` --- Represents that this game was lost by this team.
+
+		"""
+
 		rc = self.details[8]
 		if not raw:
 			rc = self.OUTCOME[rc]
 		return rc
 	
 	def attribute(self, key):
+		"""Get a single attribute for a player by it's key
+
+		This will fetch a *player attribute* by its key.
+
+		:param key: The attribute name to look for.
+		:type key: String
+		:rtype: A string or integer
+		:raise Sc2ReplaylibException: If no attribute is found then this exception is raised
+		"""
+
 		for attr in self.attributes:
 			if attr[1] == key:
 				return attr[3]
-		
+
 		# no attribute found!
 		raise Sc2replaylibException("no attribute found for player '%d' with key '%d'" % (attr[2], key))
