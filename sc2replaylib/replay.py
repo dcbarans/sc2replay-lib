@@ -252,10 +252,7 @@ class Team:
 	OUTCOME	= {
 		0: "Unknown",
 		1: "Won",
-		2: "Lossed",
-		"Unknown": "Unknown",
-		"Won": "Won",
-		"Lossed": "Lossed"
+		2: "Lost"
 	}
 
 	def __init__(self, team_number):
@@ -263,11 +260,22 @@ class Team:
 		self.number = team_number
 
 	def outcome(self, raw=False):
+		"""Returns the outcome of the match.
+
+		:param raw: If the raw value is wanted over the consistent and un-localized value
+		:type raw: Boolean
+		:rtype: This is a list of possible return values for a replay, all of which are of type ``String``:
+
+		 * ``Unknown`` --- Represents that the winner is unknown, probably due to someone leaving before the match was over.
+		 * ``Won`` --- Represents that this game was won by this team.
+		 * ``Lost`` --- Represents that this game was lost by this team.
+
+		"""
 		outcome = self.OUTCOME[0]
 		for p in self.players:
-			if outcome == self.OUTCOME[0] and p.outcome() != self.OUTCOME[0]:
-				outcome = p.outcome()
-			elif p.outcome() != outcome:
+			if outcome == self.OUTCOME[0] and p.outcome(True) != self.OUTCOME[0]:
+				outcome = p.outcome(True)
+			elif p.outcome(True) != outcome:
 				outcome = self.OUTCOME[0]
 				break
 
@@ -290,7 +298,7 @@ class Player:
 	OUTCOME	= {
 		0: "Unknown",
 		1: "Won",
-		2: "Lossed"
+		2: "Lost"
 	}
 	
 	COLORS = {
